@@ -1,17 +1,25 @@
-(ns bkmarker.core)
-(use 'bkmarker.models.model)
-(require '[clojure.java.jdbc :as j])
-
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(ns bkmarker.core
+  (:require [compojure.core :refer :all]
+            [bkmarker.models.model :refer :all]
+            [korma.core :refer :all]
+            [hiccup.core :as hiccup]
+            [clojure.java.jdbc :as j]
+            [org.httpkit.server :refer [run-server]])
+  (:gen-class :main true))
 
 (defn pr-users
   "Let's print all the user names!"
-  []
-  (j/query-results rs ["select * from users"] 4
-     ; rs will be a sequence of maps, 
-     ; one for each record in the result set. 
-     (dorun (map #(println (:username %)) rs))))
+  [user]
+  (apply str 
+         (map #(hiccup/html [:h2 (:title %)])  
+              (select bookmarks 
+                      (with users) 
+                      (where {:users.username user})
+                      (limit 10)))))
 
+(defroutes bkmark-routes 
+  (GET "/" [] "hello, bkmarkr")
+  (GET "/user/:user" [user] (pr-users user)))
+
+(defn -main []
+  (run-server bkmark-routes {:port 5010}))
