@@ -20,11 +20,15 @@
        content]]]))
 
 (defn view-bookmark [bkmark]
+  (let [my-url (get bkmark :url)
+        my-title (get bkmark :title)
+        my-username (get bkmark :username)
+        my-tags (clojure.string/join ", " (map #(get % :name ) (get bkmark :tags)))
+        my-updated (get bkmark :updated_at)]
   (html
    [:div {:class "bookmark-wrapper"}
     [:div {:class "bookmark-title"} 
-     [:a {:href (get bkmark :url)} (get bkmark :title)]]
-    [:span (str 
-                (get bkmark :updated_at) 
-                " by " 
-                (get bkmark :username))]]))
+     [:a {:href my-url} my-title]]
+    [:div {:class "bookmark-tags"} my-tags]
+    [:span (str my-updated " by " )
+     [:a {:href (str "/user/" my-username)} my-username]]])))

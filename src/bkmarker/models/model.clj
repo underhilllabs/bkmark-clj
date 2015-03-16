@@ -5,11 +5,12 @@
 (declare users bookmarks tags)
 
 (defentity users
-  (has-many bookmarks {:fk :bookmark_id}))
+  (has-many bookmarks {:fk :user_id})
+  (has-many tags {:fk :user_id}))
 
 (defentity bookmarks
   (belongs-to users {:fk :user_id})
-  (has-many tags {:fk :tag_id}))
+  (has-many tags {:fk :bookmark_id}))
 
 (defentity tags
   (belongs-to users {:fk :user_id})

@@ -11,29 +11,34 @@
 
 (defn pr-bkmarks-user
   "Let's print all the users bookmarks!"
-  [in-user lim]
-  (apply str 
-         (map #(v/view-bookmark %)  
-              (select bookmarks 
-                      (with users) 
-                      (where {:users.username in-user})
-                      (order :updated_at :DESC)
-                      (limit lim)))))
+  [in-user lim off]
+  (v/main-layout 
+   (apply str 
+          (map #(v/view-bookmark %)  
+               (select bookmarks 
+                       (with users)
+                       (with tags)
+                       (where {:users.username in-user})
+                       (order :updated_at :DESC)
+                       (limit lim)
+                       (offset off))))))
 
 (defn pr-bkmarks
   "Let's print all the bookmarks!"
-  [lim]
+  [lim off]
   (v/main-layout
    (apply str
           (map #(v/view-bookmark %)  
                (select bookmarks 
                        (with users)
+                       (with tags)
                        (order :updated_at :DESC)
-                       (limit lim))))))
+                       (limit lim)
+                       (offset off))))))
 
 (defroutes bkmark-routes 
-  (GET "/" [] (pr-bkmarks 20))
-  (GET "/user/:user" [user] (pr-bkmarks-user user 20))
+  (GET "/" [] (pr-bkmarks 20 0))
+  (GET "/user/:user" [user] (pr-bkmarks-user user 20 0))
   (resources "/")
   (not-found "Page not found"))
 
