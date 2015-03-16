@@ -1,16 +1,20 @@
 (ns bkmarker.models.model
   (:require [bkmarker.db.dbconn :refer :all]
             [korma.core :refer :all]))
-;; (use 'bkmarker.db.dbconn)
-;; (use 'korma-core)
 
-(declare users bookmarks)
+(declare users bookmarks tags)
 
 (defentity users
   (has-many bookmarks {:fk :bookmark_id}))
 
 (defentity bookmarks
-  (belongs-to users {:fk :user_id}))
+  (belongs-to users {:fk :user_id})
+  (has-many tags {:fk :tag_id}))
+
+(defentity tags
+  (belongs-to users {:fk :user_id})
+  (belongs-to bookmarks {:fk :bookmark_id}))
+  
 
 (defn pr-user-bkmarks
   "Let's print users"
