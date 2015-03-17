@@ -2,7 +2,7 @@
   (:require [hiccup.core :refer :all]
             [hiccup.page :refer :all]))
 
-(defn main-layout [content]
+(defn main-layout [title content]
   (html
     [:head 
      [:title "Bkmarker: Social Bookmarking"]
@@ -12,11 +12,11 @@
      [:div {:class "navbar navbar-fixed-top"}
       [:div {:class "navbar-inner"}
        [:div {:class "container-fluid"}
-        [:a {:class "brand" :href "#"} "Bkmarker"] 
+        [:a {:class "brand" :href "/"} "Bkmarker"] 
       ]]]
      [:div {:class "container"}
       [:div {:class "main-wrapper"} 
-       [:h2 "Welcome to Bkmarker!"]
+       [:h2 title]
        content]]]))
 
 (defn view-bookmark [bkmark]
@@ -30,5 +30,6 @@
     [:div {:class "bookmark-title"} 
      [:a {:href my-url} my-title]]
     [:div {:class "bookmark-tags"} my-tags]
-    [:span (str my-updated " by " )
+    [:div {:class "bookmark-details"}
+     (str my-updated " by " )
      [:a {:href (str "/user/" my-username)} my-username]]])))

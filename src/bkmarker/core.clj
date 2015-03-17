@@ -6,6 +6,7 @@
             [korma.core :refer :all]
             [hiccup.core :as hiccup]
             [clojure.java.jdbc :as j]
+            [clojure.string :as s]
             [org.httpkit.server :refer [run-server]])
   (:gen-class :main true))
 
@@ -13,6 +14,8 @@
   "Let's print all the users bookmarks!"
   [in-user lim off]
   (v/main-layout 
+   (str (s/capitalize in-user) 
+        "'s Bookmarks")
    (apply str 
           (map #(v/view-bookmark %)  
                (select bookmarks 
@@ -26,7 +29,7 @@
 (defn pr-bkmarks
   "Let's print all the bookmarks!"
   [lim off]
-  (v/main-layout
+  (v/main-layout "Welcome to Bkmarker!"
    (apply str
           (map #(v/view-bookmark %)  
                (select bookmarks 
