@@ -17,8 +17,8 @@
    (str "Bookmarks tagged with: " (s/capitalize my-tag))
    (apply str 
           (map #(v/view-bookmark %)  
-               (select bookmarks
-                       (with tags)
+               (select tags
+                       (with bookmarks)
                        (with users)
                        (where {:tags.name my-tag})
                        (order :updated_at :DESC)
