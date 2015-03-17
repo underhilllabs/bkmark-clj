@@ -19,11 +19,17 @@
        [:h2 title]
        content]]]))
 
+(defn tag-links [bkmark]
+  (map #(str "<a href='/tag/name/" % "'>" % "</a>") 
+       (map #(:name %) 
+            (get bkmark :tags))))
+
 (defn view-bookmark [bkmark]
   (let [my-url (get bkmark :url)
         my-title (get bkmark :title)
         my-username (get bkmark :username)
-        my-tags (clojure.string/join ", " (map #(get % :name ) (get bkmark :tags)))
+        my-tags (tag-links bkmark)
+        ;; my-tags (clojure.string/join ", " (map #(get % :name ) (get bkmark :tags)))
         my-updated (get bkmark :updated_at)]
   (html
    [:div {:class "bookmark-wrapper"}

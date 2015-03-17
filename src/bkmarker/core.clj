@@ -10,6 +10,21 @@
             [org.httpkit.server :refer [run-server]])
   (:gen-class :main true))
 
+(defn pr-bkmarks-tag
+  "Let's print all the tagged bookmarks!"
+  [my-tag lim off]
+  (v/main-layout 
+   (str "Bookmarks tagged with: " (s/capitalize my-tag))
+   (apply str 
+          (map #(v/view-bookmark %)  
+               (select bookmarks
+                       (with tags)
+                       (with users)
+                       (where {:tags.name my-tag})
+                       (order :updated_at :DESC)
+                       (limit lim)
+                       (offset off))))))
+
 (defn pr-bkmarks-user
   "Let's print all the users bookmarks!"
   [in-user lim off]
@@ -38,10 +53,12 @@
                        (order :updated_at :DESC)
                        (limit lim)
                        (offset off))))))
+(def my-limit 20)
 
 (defroutes bkmark-routes 
-  (GET "/" [] (pr-bkmarks 20 0))
-  (GET "/user/:user" [user] (pr-bkmarks-user user 20 0))
+  (GET "/" [] (pr-bkmarks my-limit 0))
+  (GET "/user/:user" [user] (pr-bkmarks-user user my-limit 0))
+  (GET "/tag/name/:tagname" [tagname] (pr-bkmarks-tag tagname my-limit 0))
   (resources "/")
   (not-found "Page not found"))
 
