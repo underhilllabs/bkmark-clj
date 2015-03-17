@@ -25,3 +25,31 @@
           (where {:name name})
           (limit num)))
 
+(defn bkmarks-query
+  [lim off]
+  (select bookmarks 
+          (with users)
+          (with tags)
+          (order :updated_at :DESC)
+          (limit lim)
+          (offset off)))
+
+(defn bkmarks-user-query
+  [my-username lim off]
+  (select bookmarks 
+          (with users)
+          (with tags)
+          (where {:users.username my-username})
+          (order :updated_at :DESC)
+          (limit lim)
+          (offset off)))
+
+(defn bkmarks-tag-query
+  [my-tag lim off]
+  (select tags
+          (with bookmarks)
+          (with users)
+          (where {:tags.name my-tag})
+          (order :updated_at :DESC)
+          (limit lim)
+          (offset off)))

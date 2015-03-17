@@ -17,29 +17,17 @@
    (str "Bookmarks tagged with: " (s/capitalize my-tag))
    (apply str 
           (map #(v/view-bookmark %)  
-               (select tags
-                       (with bookmarks)
-                       (with users)
-                       (where {:tags.name my-tag})
-                       (order :updated_at :DESC)
-                       (limit lim)
-                       (offset off))))))
+               (bkmarks-tag-query my-tag lim off)))))
 
 (defn pr-bkmarks-user
   "Let's print all the users bookmarks!"
-  [in-user lim off]
+  [my-user lim off]
   (v/main-layout 
-   (str (s/capitalize in-user) 
+   (str (s/capitalize my-user) 
         "'s Bookmarks")
    (apply str 
           (map #(v/view-bookmark %)  
-               (select bookmarks 
-                       (with users)
-                       (with tags)
-                       (where {:users.username in-user})
-                       (order :updated_at :DESC)
-                       (limit lim)
-                       (offset off))))))
+               (bkmarks-user-query my-user lim off)))))
 
 (defn pr-bkmarks
   "Let's print all the bookmarks!"
@@ -47,12 +35,8 @@
   (v/main-layout "Welcome to Bkmarker!"
    (apply str
           (map #(v/view-bookmark %)  
-               (select bookmarks 
-                       (with users)
-                       (with tags)
-                       (order :updated_at :DESC)
-                       (limit lim)
-                       (offset off))))))
+               (bkmarks-query lim off)))))
+
 (def my-limit 20)
 
 (defroutes bkmark-routes 
