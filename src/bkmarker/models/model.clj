@@ -44,6 +44,16 @@
           (limit lim)
           (offset off)))
 
+(defn users-bookmark-query
+  "Returns username and their bookmark count"
+  []
+  (select users 
+          (fields :username) 
+          (aggregate (count :bookmarks.id) :count) 
+          (join bookmarks (= :bookmarks.user_id :id)) 
+          (group :bookmarks.user_id) 
+          (order :count :DESC)))
+
 (defn bkmarks-tag-query
   [my-tag lim off]
   (select tags
