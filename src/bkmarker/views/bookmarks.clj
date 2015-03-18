@@ -16,7 +16,7 @@
       ]]]
      [:div {:class "container"}
       [:div {:class "main-wrapper"} 
-       [:h2 title]
+       [:h2 (h title)]
        content]]]))
 
 (defn tag-links [bkmark]
@@ -25,17 +25,20 @@
             (get bkmark :tags))))
 
 (defn view-bookmark [bkmark]
-  (let [my-url (get bkmark :url)
-        my-title (get bkmark :title)
-        my-username (get bkmark :username)
-        my-tags (tag-links bkmark)
-        ;; my-tags (clojure.string/join ", " (map #(get % :name ) (get bkmark :tags)))
-        my-updated (get bkmark :updated_at)]
+  (let [{:keys [title username url updated_at]} bkmark
+        my-tags (tag-links bkmark)]
   (html
    [:div {:class "bookmark-wrapper"}
     [:div {:class "bookmark-title"} 
-     [:a {:href my-url} my-title]]
+     [:a {:href url} (h title)]]
     [:div {:class "bookmark-tags"} my-tags]
     [:div {:class "bookmark-details"}
-     (str my-updated " by " )
-     [:a {:href (str "/user/" my-username)} my-username]]])))
+     (str updated_at " by " )
+     [:a {:href (str "/user/" username)} (h username)]]])))
+
+(defn view-user-bookmark-count
+  [{:keys [username count]} user-count]
+  [:div {:class "user-details"}
+   [:a {:href (str "/user/" username) } username]
+   [:a {:href (str "/user/" username) } (str "View Bookmarks (" count ")")]])
+
