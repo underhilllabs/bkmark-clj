@@ -9,5 +9,6 @@
                  [korma "0.4.0"]
                  [compojure "1.1.8"]
                  [http-kit "2.1.16"]
+                 [digest "1.4.4"] ;; for gravatar md5
                  [hiccup "1.0.5"]]
   :main bkmarker.core)

@@ -29,6 +29,14 @@
           (map #(v/view-bookmark %)  
                (bkmarks-user-query my-user lim off)))))
 
+(defn pr-user-bkmark-count
+  "Let's print all user bookmark count!"
+  []
+  (v/main-layout "User Bookmark Counts!"
+   (apply str
+          (map #(v/view-user-bookmark-count %)  
+               (users-bookmark-count-query)))))
+
 (defn pr-bkmarks
   "Let's print all the bookmarks!"
   [lim off]
@@ -42,6 +50,7 @@
 (defroutes bkmark-routes 
   (GET "/" [] (pr-bkmarks my-limit 0))
   (GET "/user/:user" [user] (pr-bkmarks-user user my-limit 0))
+  (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" [tagname] (pr-bkmarks-tag tagname my-limit 0))
   (resources "/")
   (not-found "Page not found"))

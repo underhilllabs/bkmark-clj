@@ -1,5 +1,6 @@
 (ns bkmarker.views.bookmarks
   (:require [hiccup.core :refer :all]
+            [bkmarker.helpers :refer [get-gravatar-pic]]
             [hiccup.page :refer :all]))
 
 (defn main-layout [title content]
@@ -37,8 +38,14 @@
      [:a {:href (str "/user/" username)} (h username)]]])))
 
 (defn view-user-bookmark-count
-  [{:keys [username count]} user-count]
-  [:div {:class "user-details"}
-   [:a {:href (str "/user/" username) } username]
-   [:a {:href (str "/user/" username) } (str "View Bookmarks (" count ")")]])
+  [user-count]
+  (let [{:keys [username count pic_url fullname email]} user-count]
+    (html [:div {:class "user-details"}
+           [:span {:class "profile-avatar"} 
+            [:img {:src (get-gravatar-pic email)}]]
+           [:span {:class "profile-username"} 
+            [:a {:href (str "/user/" username) } username]]
+           [:span {:class "profile-fullname"} 
+            (str " " fullname " ")
+            [:a {:href (str "/user/" username) } (str "View Bookmarks (" count ")")]]])))
 
