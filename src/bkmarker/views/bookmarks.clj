@@ -13,7 +13,12 @@
      [:div {:class "navbar navbar-fixed-top"}
       [:div {:class "navbar-inner"}
        [:div {:class "container-fluid"}
-        [:a {:class "brand" :href "/"} "Bkmarker"] 
+        [:a {:class "brand" :href "/"} "Bkmarker"]
+        [:div {:class "nav-collapse"}
+         [:ul {:class "nav"}
+          [:li [:a {:href "/user/"} "Users"]]
+          [:li [:a {:href "/tags/"} "Tags"]]
+          ]]
       ]]]
      [:div {:class "container"}
       [:div {:class "main-wrapper"} 
@@ -40,7 +45,7 @@
 (defn view-user-bookmark-count
   [user-count]
   (let [{:keys [username count pic_url fullname email]} user-count]
-    (html [:div {:class "user-details"}
+    (html [:div {:class "user-div"}
            [:span {:class "profile-avatar"} 
             [:img {:src (get-gravatar-pic email)}]]
            [:span {:class "profile-username"} 
@@ -49,3 +54,9 @@
             (str " " fullname " ")
             [:a {:href (str "/user/" username) } (str "View Bookmarks (" count ")")]]])))
 
+(defn view-tag-count
+  [tags-count]
+  (let [{:keys [name count]} tags-count]
+    (html [:div {:class "tag-div"}
+           [:a {:href (str "/tag/name/" name)} name]
+           (str " (" count  ")")])))

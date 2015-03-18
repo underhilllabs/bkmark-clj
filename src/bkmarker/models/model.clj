@@ -54,6 +54,16 @@
           (group :bookmarks.user_id)
           (order :count :DESC)))
 
+(defn tags-count-query
+  "Returns user details and their bookmark count"
+  []
+  (select tags
+          (fields :name)
+          (aggregate (count :name) :count)
+          (group :name)
+          (order :count :DESC)
+          (limit 50)))
+
 (defn bkmarks-tag-query
   [my-tag lim off]
   (select tags
