@@ -65,7 +65,7 @@
 (defn pr-bkmarks
   "Print all the bookmarks!"
   [params lim off]
-  (let [page (get params "page" 1)
+  (let [page (get params "page" "1")
         offset (dec (Integer/parseInt page))]
     (v/main-layout 
      "Welcome to Bkmarker!"
