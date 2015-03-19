@@ -71,3 +71,15 @@
     (html [:div {:class "tag-div"}
            [:a {:href (str "/tag/name/" name)} name]
            (str " (" count  ")")])))
+
+(defn view-pagination
+  [url limit page total]
+  (let [total-pages (/ total limit)
+        low-page (+ (* (quot page 10) 10) 1) 
+        hi-page (+ low-page 10)]
+    (str [:a {:href  (str url "?page=" 1)} "<<"]
+         (apply str 
+                (map 
+                 #(str [:a {:href  (str url "?page=" %)} page]) 
+                 (range low-page hi-page)))
+         [:a {:href  (str url "?page=" total-pages)} ">>"])))
