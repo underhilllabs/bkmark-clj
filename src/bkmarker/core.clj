@@ -64,16 +64,18 @@
 
 (defn pr-bkmarks
   "Print all the bookmarks!"
-  [lim off]
-  (v/main-layout "Welcome to Bkmarker!"
-   (apply str
-          (map #(v/view-bookmark %)  
-               (bkmarks-query lim off)))))
+  [params lim off]
+  (let [page (get params "page" 1)]
+    (v/main-layout 
+     "Welcome to Bkmarker!"
+     (apply str
+            (map #(v/view-bookmark %)  
+                 (bkmarks-query lim (dec (Integer/parseInt page))))))))
 
 (def my-limit 20)
 
 (defroutes bkmark-routes 
-  (GET "/" [] (pr-bkmarks my-limit 0))
+  (GET "/" {params :params} (pr-bkmarks params my-limit 0))
   (GET "/user/:user" [user] (pr-bkmarks-user user my-limit 0))
   (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" [tagname] (pr-bkmarks-tag tagname my-limit 0))
