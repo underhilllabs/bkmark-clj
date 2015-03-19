@@ -73,3 +73,13 @@
           (order :updated_at :DESC)
           (limit lim)
           (offset off)))
+
+(defn bkmarks-search-query
+  "search bookmarks with title like search phrase"
+  [phrase lim off]
+  (select bookmarks
+          (with tags)
+          (where {:title [like (str "%" phrase "%")]})
+          (order :updated_at :DESC)
+          (limit lim)
+          (offset off)))

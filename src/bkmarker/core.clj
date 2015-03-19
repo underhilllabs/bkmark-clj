@@ -1,5 +1,6 @@
 (ns bkmarker.core
   (:require [compojure.core :refer :all]
+            [ring.middleware.params :refer :all]
             [compojure.route :refer :all]
             [bkmarker.models.model :refer :all]
             [bkmarker.views.bookmarks :as v]
@@ -30,15 +31,31 @@
                (bkmarks-user-query my-user lim off)))))
 
 (defn pr-user-bkmark-count
-  "Let's print all user bookmark count!"
+  "Show all user bookmark count!"
   []
   (v/main-layout "Bkmarker Users!"
    (apply str
           (map #(v/view-user-bookmark-count %)  
                (users-bookmark-count-query)))))
 
+(defn pr-bkmark-query
+  "Show results of bookmark query!"
+  [title query]
+  (v/main-layout title
+   (apply str
+          (map #(v/view-bookmark %)  
+               query))))
+
+(defn pr-search-page
+  "Show search results"
+  [params lim off]
+  (let [kw (get params "keywords")]
+    (pr-bkmark-query
+     (str "Search results for " kw)
+     (bkmarks-search-query kw lim off))))
+
 (defn pr-tags-count
-  "Let's print all user bookmark count!"
+  "Print all user bookmark count!"
   []
   (v/main-layout "Bkmarker Tags!"
    (apply str
@@ -46,7 +63,7 @@
                (tags-count-query)))))
 
 (defn pr-bkmarks
-  "Let's print all the bookmarks!"
+  "Print all the bookmarks!"
   [lim off]
   (v/main-layout "Welcome to Bkmarker!"
    (apply str
@@ -61,8 +78,11 @@
   (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" [tagname] (pr-bkmarks-tag tagname my-limit 0))
   (GET "/tags/" [] (pr-tags-count))
+  (GET "/search/" 
+       {params :params} 
+       (pr-search-page params my-limit 0))
   (resources "/")
   (not-found "Page not found"))
 
 (defn -main []
-  (run-server bkmark-routes {:port 5010}))
+  (run-server (wrap-params bkmark-routes) {:port 5010}))
