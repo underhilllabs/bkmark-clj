@@ -22,9 +22,12 @@
         [:get "/search/"]
         (text-field {:class "input-text span2" :placeholder "search"} "keywords"))]
       ]]]]))
-  
-(defn main-layout [title content]
-  (html
+
+(defn main-layout
+  ([title content] (main-layout title content ""))
+  ([title content pagination]
+   "main-layout without pagination"
+   (html
     [:head 
      [:title "Bkmarker: Social Bookmarking"]
      (include-css "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
@@ -34,7 +37,8 @@
      [:div {:class "container"}
       [:div {:class "main-wrapper"} 
        [:h2 (h title)]
-       content]]]))
+       content
+       [:div {:id "pagination"} pagination]]]])))
 
 (defn tag-links [bkmark]
   (map #(str "<a href='/tag/name/" % "'>" % "</a>") 
