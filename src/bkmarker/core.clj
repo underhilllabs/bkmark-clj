@@ -65,12 +65,13 @@
 (defn pr-bkmarks
   "Print all the bookmarks!"
   [params lim off]
-  (let [page (get params "page" 1)]
+  (let [page (get params "page" 1)
+        offset (dec (Integer/parseInt page))]
     (v/main-layout 
      "Welcome to Bkmarker!"
      (apply str
             (map #(v/view-bookmark %)  
-                 (bkmarks-query lim (dec (Integer/parseInt page))))))))
+                 (bkmarks-query lim offset))))))
 
 (def my-limit 20)
 
