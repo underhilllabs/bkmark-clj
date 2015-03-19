@@ -1,8 +1,28 @@
 (ns bkmarker.views.bookmarks
   (:require [hiccup.core :refer :all]
+            [hiccup.form :refer :all]
             [bkmarker.helpers :refer [get-gravatar-pic]]
             [hiccup.page :refer :all]))
 
+(defn nav-header
+  "site navigation header for the web site"
+  []
+  (html [:div {:class "navbar navbar-fixed-top"}
+   [:div {:class "navbar-inner"}
+    [:div {:class "container"}
+     [:a {:class "brand" :href "/"} "Bkmarker"]
+     [:div {:class "nav-collapse"}
+      [:ul {:class "nav"}
+       [:li [:a {:href "/user/"} "Users"]]
+       [:li [:a {:href "/tags/"} "Tags"]]]
+      [:div 
+       {:class "navbar-search"}
+       (form-to 
+        {:class "navbar-search pull-left"}
+        [:get "/search/"]
+        (text-field {:class "input-text span2" :placeholder "search"} "keywords"))]
+      ]]]]))
+  
 (defn main-layout [title content]
   (html
     [:head 
@@ -10,16 +30,7 @@
      (include-css "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css")
      (include-css "/css/styles.css")]
     [:body 
-     [:div {:class "navbar navbar-fixed-top"}
-      [:div {:class "navbar-inner"}
-       [:div {:class "container-fluid"}
-        [:a {:class "brand" :href "/"} "Bkmarker"]
-        [:div {:class "nav-collapse"}
-         [:ul {:class "nav"}
-          [:li [:a {:href "/user/"} "Users"]]
-          [:li [:a {:href "/tags/"} "Tags"]]
-          ]]
-      ]]]
+     (nav-header)
      [:div {:class "container"}
       [:div {:class "main-wrapper"} 
        [:h2 (h title)]
