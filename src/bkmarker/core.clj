@@ -18,7 +18,8 @@
    (str "Bookmarks tagged with: " (s/capitalize my-tag))
    (apply str 
           (map #(v/view-bookmark %)  
-               (bkmarks-tag-query my-tag lim off)))))
+               (bkmarks-tag-query my-tag lim off)))
+))
 
 (defn pr-bkmarks-user
   "Let's print all the users bookmarks!"
@@ -49,7 +50,8 @@
 (defn pr-search-page
   "Show search results"
   [params lim off]
-  (let [kw (get params "keywords")]
+  (let [kw (get params "keywords")
+        page (get params "page" "1")]
     (pr-bkmark-query
      (str "Search results for " kw)
      (bkmarks-search-query kw lim off))))
@@ -71,7 +73,8 @@
      "Welcome to Bkmarker!"
      (apply str
             (map #(v/view-bookmark %)  
-                 (bkmarks-query lim offset))))))
+                 (bkmarks-query lim offset)))
+     (v/view-pagination-simple "/" (Integer/parseInt page)))))
 
 (def my-limit 20)
 

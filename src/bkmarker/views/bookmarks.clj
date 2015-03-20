@@ -87,3 +87,12 @@
                  #(str [:a {:href  (str url "?page=" %)} page]) 
                  (range low-page hi-page)))
          [:a {:href  (str url "?page=" total-pages)} ">>"])))
+
+(defn view-pagination-simple
+  [url page-num]
+  [:div.row [:div.span9.pagination.flickr_pagination
+   (if (> page-num 1) 
+     [:span {:class "previous"} [:a {:href  (str url "?page=" (dec page-num))} "<< earlier "]])
+   [:span {:class "current-page"} page-num] 
+   [:span {:class "next"} [:a {:href  (str url "?page=" (inc page-num))} " later >>"]]]])
+
