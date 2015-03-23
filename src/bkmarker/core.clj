@@ -16,12 +16,13 @@
   [params lim off]
   (let [page (get params "page" "1")
         my-tag (get params :tagname)
-        page-num (Integer/parseInt page)]
+        page-num (Integer/parseInt page)
+        offset (* page-num lim)]
     (v/main-layout 
      (str "Bookmarks tagged with: " (s/capitalize my-tag))
      (apply str 
             (map #(v/view-bookmark %)  
-                 (bkmarks-tag-query my-tag lim off)))
+                 (bkmarks-tag-query my-tag lim offset)))
      (v/view-pagination-simple (str "/tag/name/" my-tag) page-num))))
 
 (defn pr-bkmarks-user
