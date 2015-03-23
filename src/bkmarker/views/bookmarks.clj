@@ -48,14 +48,15 @@
 
 (defn view-bookmark [bkmark]
   (let [{:keys [title username url updated_at]} bkmark
-        my-tags (tag-links bkmark)]
+        my-tags (tag-links bkmark)
+        df (java.text.SimpleDateFormat. "yyyy-MM-dd HH:mm:ss:S")]
   (html
    [:div {:class "bookmark-wrapper"}
     [:div {:class "bookmark-title"} 
      [:a {:href url} (h title)]]
     [:div {:class "bookmark-tags"} my-tags]
     [:div {:class "bookmark-details"}
-     (str updated_at " by " )
+     (str (.format (java.text.SimpleDateFormat. "MMMMM dd, yyyy") updated_at) " by " )
      [:a {:href (str "/user/" username)} (h username)]]])))
 
 (defn view-user-bookmark-count
