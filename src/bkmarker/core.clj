@@ -41,20 +41,25 @@
 
 (defn pr-bkmark-query
   "Show results of bookmark query!"
-  [title query]
-  (v/main-layout title
+  [title query kw page-num]
+  (v/main-layout 
+   title
    (apply str
           (map #(v/view-bookmark %)  
-               query))))
+               query))
+   (v/view-pagination-simple (str "/search/?keyword=" kw) (Integer/parseInt page-num))))
 
 (defn pr-search-page
   "Show search results"
   [params lim off]
-  (let [kw (get params "keywords")
-        page (get params "page" "1")]
+  (let [kw (get params "keyword")
+        page (get params "page" "1")
+        offset (quot (Integer/parseInt page) lim)]
     (pr-bkmark-query
      (str "Search results for " kw)
-     (bkmarks-search-query kw lim off))))
+     (bkmarks-search-query kw lim offset)
+     kw
+     page)))
 
 (defn pr-tags-count
   "Print all user bookmark count!"
@@ -85,10 +90,10 @@
   (GET "/tag/name/:tagname" [tagname] (pr-bkmarks-tag tagname my-limit 0))
   (GET "/tags/" [] (pr-tags-count))
   (GET "/search/" 
-       {params :params} 
+       {params :params}
        (pr-search-page params my-limit 0))
   (resources "/")
-  (not-found "Page not found"))
+  (not-found "Page not found."))
 
 (defn -main []
   (run-server (wrap-params bkmark-routes) {:port 5010}))

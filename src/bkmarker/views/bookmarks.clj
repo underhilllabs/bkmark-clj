@@ -1,6 +1,7 @@
 (ns bkmarker.views.bookmarks
   (:require [hiccup.core :refer :all]
             [hiccup.form :refer :all]
+            [ring.util.request :refer [path-info]]
             [bkmarker.helpers :refer [get-gravatar-pic]]
             [hiccup.page :refer :all]))
 
@@ -90,9 +91,10 @@
 
 (defn view-pagination-simple
   [url page-num]
-  [:div.row [:div.span9.pagination.flickr_pagination
-   (if (> page-num 1) 
-     [:span {:class "previous"} [:a {:href  (str url "?page=" (dec page-num))} "<< earlier "]])
-   [:span {:class "current-page"} page-num] 
-   [:span {:class "next"} [:a {:href  (str url "?page=" (inc page-num))} " later >>"]]]])
+  (let [param-connecter (if (re-seq #"\?" url) "&" "?")] 
+    [:div.row [:div.span9.pagination.flickr_pagination
+               (if (> page-num 1) 
+                 [:span {:class "previous"} [:a {:href  (str url param-connecter "page=" (dec page-num))} "<< earlier "]])
+               [:span {:class "current-page"} page-num] 
+               [:span {:class "next"} [:a {:href  (str url param-connecter "page=" (inc page-num))} " later >>"]]]]))
 
