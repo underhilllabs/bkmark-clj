@@ -18,7 +18,7 @@
   
 
 (defn pr-user-bkmarks
-  "Let's print users"
+  "Select the users and their bookmark count"
   [name num]
   (select users
           (with bookmarks)
@@ -35,6 +35,7 @@
           (offset off)))
 
 (defn bkmarks-user-query
+  "Select the bookmarks for a User"
   [my-username lim off]
   (select bookmarks 
           (with users)
@@ -55,7 +56,7 @@
           (order :count :DESC)))
 
 (defn tags-count-query
-  "Returns user details and their bookmark count"
+  "Returns tags details and each tags bookmark count"
   []
   (select tags
           (fields :name)
