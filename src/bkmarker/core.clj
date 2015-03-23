@@ -47,14 +47,14 @@
    (apply str
           (map #(v/view-bookmark %)  
                query))
-   (v/view-pagination-simple (str "/search/?keyword=" kw) (Integer/parseInt page-num))))
+   (v/view-pagination-simple (str "/search/?keywords=" kw) (Integer/parseInt page-num))))
 
 (defn pr-search-page
   "Show search results"
   [params lim off]
-  (let [kw (get params "keyword")
+  (let [kw (get params "keywords")
         page (get params "page" "1")
-        offset (quot (Integer/parseInt page) lim)]
+        offset (* (Integer/parseInt page) lim)]
     (pr-bkmark-query
      (str "Search results for " kw)
      (bkmarks-search-query kw lim offset)
@@ -73,7 +73,7 @@
   "Print all the bookmarks!"
   [params lim off]
   (let [page (get params "page" "1")
-        offset (dec (Integer/parseInt page))]
+        offset (* lim (Integer/parseInt page))]
     (v/main-layout 
      "Welcome to Bkmarker!"
      (apply str
