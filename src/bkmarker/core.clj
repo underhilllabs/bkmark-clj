@@ -101,9 +101,11 @@
   (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" {params :params} (pr-bkmarks-tag params my-limit 0))
   (GET "/tags/" [] (pr-tags-count))
-  (GET "/search/" 
+  (GET "/search/"
        {params :params}
        (pr-search-page params my-limit 0))
+  (GET "/login" []
+       (v/view-login-page))
   (resources "/")
   (not-found "Page not found."))
 

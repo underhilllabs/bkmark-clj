@@ -5,6 +5,12 @@
             [bkmarker.helpers :refer [get-gravatar-pic]]
             [hiccup.page :refer :all]))
 
+(defn login-nav
+  "Login/current session navigation widget"
+  []
+  (html [:ul.nav.navbar-nav.navbar-right                                                                                                                   
+   [:li [:a {:href "/login"} "Login"]]]))
+
 (defn nav-header
   "site navigation header for the web site"
   []
@@ -22,6 +28,7 @@
         {:class "navbar-search pull-left"}
         [:get "/search/"]
         (text-field {:class "input-text span2" :placeholder "search"} "keywords"))]
+      (login-nav)
       ]]]]))
 
 (defn main-layout
@@ -99,3 +106,18 @@
                [:span {:class "current-page"} page-num] 
                [:span {:class "next"} [:a {:href  (str url param-connecter "page=" (inc page-num))} " later >>"]]]]))
 
+(defn view-login-page
+  []
+  (main-layout 
+   "Sign In"
+   (form-to 
+    [:post "/login"]
+    [:div.field 
+     [:label {:for "user-name"} "Email"]
+      [:input {:class "input-text span2" :name "user-name"}]]
+    [:div.field 
+     [:label {:for "user-pass"} "Password"]
+     [:input {:type "password" 
+              :class "input-text span2" 
+              :name "user-pass"}]]
+    [:div.actions (submit-button "Login")])))
