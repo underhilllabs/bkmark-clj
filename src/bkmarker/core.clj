@@ -5,6 +5,9 @@
             [bkmarker.models.model :refer :all]
             [bkmarker.views.bookmarks :as v]
             [korma.core :refer :all]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]
+                             [credentials :as creds])
             [hiccup.core :as hiccup]
             [clojure.java.jdbc :as j]
             [clojure.string :as s]

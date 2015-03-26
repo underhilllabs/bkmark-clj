@@ -8,6 +8,7 @@
                  [mysql/mysql-connector-java "5.1.25"]
                  [korma "0.4.0"]
                  [compojure "1.1.8"]
+                 [com.cemerick/friend "0.2.1"]
                  [http-kit "2.1.16"]
                  [digest "1.4.4"] ;; for gravatar md5
                  [hiccup "1.0.5"]]
