@@ -4,7 +4,7 @@ A Social Bookmarking site written in Clojure.
 
 
 
-## SET UP
+## Set Up
 
 1. Change database settings in project.clj and src/bkmarker/db/dbconn.clj
 2. Create database
