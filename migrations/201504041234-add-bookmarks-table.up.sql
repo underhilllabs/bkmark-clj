@@ -2,7 +2,7 @@ CREATE TABLE bookmarks (
        id INTEGER PRIMARY KEY AUTO_INCREMENT,
        url VARCHAR(255),
        title VARCHAR(255),
-       desc TEXT,
+       description TEXT,
        private SMALLINT,
        created_at DATETIME,
        updated_at DATETIME,
