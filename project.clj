@@ -9,7 +9,9 @@
                  [korma "0.4.0"]
                  [compojure "1.1.8"]
                  [com.cemerick/friend "0.2.1"]
+                 [ragtime "0.3.8"]
                  [http-kit "2.1.16"]
                  [digest "1.4.4"] ;; for gravatar md5
                  [hiccup "1.0.5"]]
+  :plugins [[ragtime/ragtime.lein "0.3.8"]]
   :main bkmarker.core)
