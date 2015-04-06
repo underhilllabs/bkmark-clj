@@ -111,13 +111,13 @@
   (main-layout 
    "Sign In"
    (form-to 
-    [:post "/login"]
+    [:post "login"]
     [:div.field 
      [:label {:for "user-name"} "Email"]
-      [:input {:class "input-text span2" :name "user-name"}]]
+      [:input {:class "input-text span2" :name "username"}]]
     [:div.field 
      [:label {:for "user-pass"} "Password"]
      [:input {:type "password" 
               :class "input-text span2" 
-              :name "user-pass"}]]
+              :name "password"}]]
     [:div.actions (submit-button "Login")])))
