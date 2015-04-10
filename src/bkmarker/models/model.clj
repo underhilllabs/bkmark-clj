@@ -25,6 +25,13 @@
           (where {:name name})
           (limit num)))
 
+(defn find-user-email
+  "Select user with email"
+  [email]
+  (select users
+          (where {:email email})
+          (limit 1)))
+
 (defn bkmarks-query
   [lim off]
   (select bookmarks 

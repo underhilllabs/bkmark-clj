@@ -1,18 +1,27 @@
 (ns bkmarker.core
   (:require [compojure.core :refer :all]
             [ring.middleware.params :refer :all]
+            [ring.middleware.cookies :refer [wrap-cookies]]
+            [ring.util.response :as resp]
             [compojure.route :refer :all]
             [bkmarker.models.model :refer :all]
             [bkmarker.views.bookmarks :as v]
             [korma.core :refer :all]
-            [cemerick.friend :as friend]
-            (cemerick.friend [workflows :as workflows]
-                             [credentials :as creds])
+            [noir.util.route :refer [restricted]]
+            [noir.util.middleware :refer [app-handler]]
+            [noir.session :as session]
+            [noir.cookies :as cookies]
             [hiccup.core :as hiccup]
+            [hiccup.page :as h]
             [clojure.java.jdbc :as j]
             [clojure.string :as s]
             [org.httpkit.server :refer [run-server]])
   (:gen-class :main true))
+
+;; timeout sessions after 30 days
+(def session-defaults
+  {:timeout (* 60 30 24)
+   :timeout-response (resp/redirect "/")})
 
 (defn pr-bkmarks-tag
   "Let's print all the tagged bookmarks!"
@@ -83,7 +92,7 @@
                (tags-count-query)))))
 
 (defn pr-bkmarks
-  "Print all the bookmarks!"
+  "Show all the bookmarks!"
   [params lim off]
   (let [page (get params "page" "1")
         page-num (Integer/parseInt page)
@@ -95,10 +104,34 @@
                  (bkmarks-query lim offset)))
      (v/view-pagination-simple "/" page-num))))
 
+(defn pr-my-bkmarks
+  "Show all of my bookmarks!"
+  [params lim off]
+  (let [page (get params "page" "1")
+        page-num (Integer/parseInt page)
+        offset (* lim (dec page-num))]
+    (v/main-layout 
+     "Your bookmarks"
+     (apply str
+            (map #(v/view-bookmark %)  
+                 (bkmarks-query lim offset)))
+     (v/view-pagination-simple "/" page-num))))
+
 (def my-limit 20)
+
+(defn auth-user
+  [params]
+  (if-let [user (first (find-user-email (get params "username")))]
+    (do
+      ;;(cookies/put! :user-id (get user :uid))
+      (session/put! :user-id (get user :uid))
+      (str "You're authorized: " (get params "username") " with id: " (get user :uid)))
+    "Couldn't find that email!"))
 
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
+  (GET "/bookmarks/" {params :params} 
+       (restricted (pr-my-bkmarks params my-limit 0)))
   (GET "/user/:user" {params :params}
        (pr-bkmarks-user params my-limit 0))
   (GET "/user/" [] (pr-user-bkmark-count))
@@ -108,9 +141,15 @@
        {params :params}
        (pr-search-page params my-limit 0))
   (GET "/login" []
-       (v/view-login-page))
+      (v/view-login-page))
+  (GET "/register" []
+       (v/view-register-page))
+  (POST "/login" {params :params}
+        (auth-user params))
+        
   (resources "/")
   (not-found "Page not found."))
 
 (defn -main []
-  (run-server (wrap-params bkmark-routes) {:port 5010}))
+  (run-server (session/wrap-noir-session (wrap-params bkmark-routes)) {:port 5010}))
+

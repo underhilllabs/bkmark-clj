@@ -121,3 +121,24 @@
               :class "input-text span2" 
               :name "password"}]]
     [:div.actions (submit-button "Login")])))
+
+(defn view-register-page
+  []
+  (main-layout 
+   "Register New Account"
+   (form-to 
+    [:post "/login"]
+    [:div.field 
+     [:label {:for "username"} "Email"]
+      [:input {:class "input-text span2" :name "username"}]]
+    [:div.field 
+     [:label {:for "userpass"} "Password"]
+     [:input {:type "password" 
+              :class "input-text span2" 
+              :name "userpass"}]]
+    [:div.field 
+     [:label {:for "userpass2"} "Confirm Password"]
+     [:input {:type "password" 
+              :class "input-text span2" 
+              :name "userpass2"}]]
+    [:div.actions (submit-button "Register")])))
