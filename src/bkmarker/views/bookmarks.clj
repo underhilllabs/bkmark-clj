@@ -122,6 +122,15 @@
               :name "password"}]]
     [:div.actions (submit-button "Login")])))
 
+(defn view-profile
+  [user]
+  (main-layout
+   "User Profile"
+   [:h2 (str "Welcome " (user :fullname "Unnamed friend"))]
+   [:div.profile
+    [:span "Email:"]
+    [:span (user :email)]]))
+
 (defn view-register-page
   []
   (main-layout 

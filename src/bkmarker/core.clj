@@ -124,9 +124,18 @@
   (if-let [user (first (find-user-email (get params "username")))]
     (do
       ;;(cookies/put! :user-id (get user :uid))
-      (session/put! :user-id (get user :uid))
-      (str "You're authorized: " (get params "username") " with id: " (get user :uid)))
-    "Couldn't find that email!"))
+      (session/put! :user-id (get user :id))
+      (str "You're authorized: " (get params "username") " with id: " (get user :id) " and email: " (get user :email) " fullname: " (get user :fullname)))
+    (resp/redirect "/login?q=incorrect_login")))
+
+;; (if-let [user_id (session/get :user_id)] ...
+(defn pr-my-profile
+  []
+  (if-let [user-id (session/get :user-id)]
+    (if-let [user (first (find-user-by-id user-id))]
+      (v/view-profile user)
+      (resp/redirect "/login?q=user_not_found"))
+    (resp/redirect "/login?q=not_logged_in")))
 
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
@@ -137,6 +146,7 @@
   (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" {params :params} (pr-bkmarks-tag params my-limit 0))
   (GET "/tags/" [] (pr-tags-count))
+  (GET "/profile/" [] (pr-my-profile))
   (GET "/search/"
        {params :params}
        (pr-search-page params my-limit 0))

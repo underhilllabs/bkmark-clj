@@ -32,6 +32,13 @@
           (where {:email email})
           (limit 1)))
 
+(defn find-user-by-id
+  "Select user with email"
+  [user-id]
+  (select users
+          (where {:id user-id})
+          (limit 1)))
+
 (defn bkmarks-query
   [lim off]
   (select bookmarks 
