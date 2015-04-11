@@ -9,7 +9,7 @@
             [korma.core :refer :all]
             [noir.util.route :refer [restricted]]
             [noir.util.middleware :refer [app-handler]]
-            [noir.util.crypt :refer [encrypt]]
+            [noir.util.crypt :as crypt]
             [noir.session :as session]
             [noir.cookies :as cookies]
             [hiccup.core :as hiccup]
@@ -123,18 +123,21 @@
 (defn auth-user
   [params]
   (if-let [user (first (find-user-email (get params "username")))]
-    (do
-      ;;(cookies/put! :user-id (get user :uid))
-      (session/put! :user-id (get user :id))
-      (str "You're authorized: " (get params "username") " with id: " (get user :id) " and email: " (get user :email) " fullname: " (get user :fullname)))
-    (resp/redirect "/login?q=incorrect_login")))
+    (if (crypt/compare (get params "password") (get user :password_digest))
+      (do
+        ;;(cookies/put! :user-id (get user :uid))
+        (session/put! :user-id (get user :id))
+        ;;(str "You're authorized: " (get params "username") " with id: " (get user :id) " and email: " (get user :email) " fullname: " (get user :fullname)))
+        (resp/redirect "/profile/"))
+      (resp/redirect "/login?q=incorrect_login"))
+    (resp/redirect "/login?q=incorrect_email")))
 
 (defn register-user
   [params]
   (let [username (get params "username")
         password (get params "userpass")
         email (get params "email")
-        password-digest (encrypt password)
+        password-digest (crypt/encrypt password)
         user-id (create-user username email password-digest)]
     (do
       (session/put! :user-id user-id)
