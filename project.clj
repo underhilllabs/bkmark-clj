@@ -10,6 +10,7 @@
                  [mysql/mysql-connector-java "5.1.25"]
                  [korma "0.4.0"]
                  [enlive "1.1.5"]
+                 [yesql "0.4.0"]
                  [compojure "1.1.8"]
                  ;;[com.cemerick/friend "0.2.1"]
                  [ragtime "0.3.8"]
