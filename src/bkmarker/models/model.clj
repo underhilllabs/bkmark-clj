@@ -39,6 +39,14 @@
           (where {:id user-id})
           (limit 1)))
 
+(defn create-user
+  "Create a new user. Returns the id."
+  [username email pass_digest]
+  (let [user-return 
+        (insert users
+                (values [{:username username :email email :password_digest pass_digest}]))]
+    (user-return :generated_key)))
+
 (defn bkmarks-query
   [lim off]
   (select bookmarks 

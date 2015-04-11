@@ -9,6 +9,7 @@
             [korma.core :refer :all]
             [noir.util.route :refer [restricted]]
             [noir.util.middleware :refer [app-handler]]
+            [noir.util.crypt :refer [encrypt]]
             [noir.session :as session]
             [noir.cookies :as cookies]
             [hiccup.core :as hiccup]
@@ -128,6 +129,17 @@
       (str "You're authorized: " (get params "username") " with id: " (get user :id) " and email: " (get user :email) " fullname: " (get user :fullname)))
     (resp/redirect "/login?q=incorrect_login")))
 
+(defn register-user
+  [params]
+  (let [username (get params "username")
+        password (get params "userpass")
+        email (get params "email")
+        password-digest (encrypt password)
+        user-id (create-user username email password-digest)]
+    (do
+      (session/put! :user-id user-id)
+      (resp/redirect "/profile"))))
+
 ;; (if-let [user_id (session/get :user_id)] ...
 (defn pr-my-profile
   []
@@ -154,6 +166,8 @@
       (v/view-login-page))
   (GET "/register" []
        (v/view-register-page))
+  (POST "/register" {params :params}
+        (register-user params))
   (POST "/login" {params :params}
         (auth-user params))
         

@@ -136,10 +136,13 @@
   (main-layout 
    "Register New Account"
    (form-to 
-    [:post "/login"]
+    [:post "/register"]
     [:div.field 
-     [:label {:for "username"} "Email"]
+     [:label {:for "username"} "Username"]
       [:input {:class "input-text span2" :name "username"}]]
+    [:div.field 
+     [:label {:for "email"} "Email"]
+      [:input {:class "input-text span2" :name "email"}]]
     [:div.field 
      [:label {:for "userpass"} "Password"]
      [:input {:type "password" 
