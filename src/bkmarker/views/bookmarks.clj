@@ -20,6 +20,12 @@
             [:a {:href "/profile/"} "View profile"]
             [:a {:href "/login"} "Login"])]]))
 
+(defn nav-links-auth
+  [user-id]
+  (html
+   [:li [:a {:href (str "/bookmarks/user/" user-id)} "My Bookmarks"]]
+   [:li [:a {:href "/bookmarks/new"} "Add Bookmark"]]))
+
 (defn nav-header
   "site navigation header for the web site"
   []
@@ -29,6 +35,8 @@
      [:a {:class "brand" :href "/"} "Bkmarker"]
      [:div {:class "nav-collapse"}
       [:ul {:class "nav"}
+       (when-let [user-id (session/get :user-id)]
+         (nav-links-auth user-id))
        [:li [:a {:href "/user/"} "Users"]]
        [:li [:a {:href "/tags/"} "Tags"]]]
       [:div 
@@ -158,6 +166,15 @@
     [:img {:src (get-gravatar-pic (user :email))}]
     [:span "Name:"]
     [:span (user :fullname)]
+    (when (= (user :id) (session/get :user-id))
+      [:div
+       [:hr]
+       [:h3 "Add a bookmarklet to browser"]
+       [:span "Drag the following shortcut to your browser bookmark bar for a shortcut to bookmark the current page:"]
+       [:p 
+        [:span.bookmarklet
+         [:a {:href "javascript:x=document;a=encodeURIComponent(x.location.href);t=encodeURIComponent(x.title);d=encodeURIComponent(window.getSelection());open('http://dev.bkmark.me/bookmarklet?action=add&popup=1&address='+a+'&title='+t+'&description='+d,'Bkmarker%20Bookmarks','modal=1,status=0,scrollbars=1,toolbar=0,resizable=1,width=730,height=465,left='+(screen.width-730)/2+',top='+(screen.height-425)/2);void%200;"} "Post to Bookmarks"]
+        ]]])
     [:hr]
     [:div.recent
      [:h3 "Recent Bookmarks"]
@@ -191,3 +208,34 @@
               :class "input-text span2" 
               :name "userpass2"}]]
     [:div.actions (submit-button "Register")])))
+
+(defn view-bookmark-form
+  [user-id]
+  (main-layout 
+   "Add Bookmark"
+   (form-to 
+    [:post "/bookmarks/new"]
+    [:input {:type "hidden" :value user-id :name "user_id"}] 
+    [:div.field 
+     [:label {:for "address"} "Address"]
+      [:input {:class "input-text span2" :name "address"}]]
+    [:div.field 
+     [:label {:for "title"} "Title"]
+      [:input {:class "input-text span2" :name "title"}]]
+    [:div.field 
+     [:label {:for "description"} "Description"]
+      [:input {:class "input-text span2" :name "description"}]]
+    [:div.field 
+     [:label {:for "tags"} "Tags"]
+      [:input {:class "input-text span2" :name "tags"}]]
+    [:div.field 
+     [:label {:for "private"} "Private"]
+     [:input {:type "checkbox" 
+              :class "input-checkbox" 
+              :name "private"}]]
+    [:div.field 
+     [:label {:for "archive-url"} "archive url?"]
+     [:input {:type "checkbox" 
+              :class "input-checkbox" 
+              :name "archive_url"}]]
+    [:div.actions (submit-button "Create Bookmark")])))

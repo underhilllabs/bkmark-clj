@@ -6,6 +6,8 @@
             [compojure.route :refer :all]
             [bkmarker.models.model :refer :all]
             [bkmarker.views.bookmarks :as v]
+            [bkmarker.db.dbconn :refer [db-spec]]
+            [yesql.core :refer [defqueries]]
             [korma.core :refer :all]
             [noir.util.route :refer [restricted]]
             [noir.util.middleware :refer [app-handler]]
@@ -18,6 +20,9 @@
             [clojure.string :as s]
             [org.httpkit.server :refer [run-server]])
   (:gen-class :main true))
+
+;; load the yesql queries
+(defqueries "bkmarker/models/bookmark.sql")
 
 ;; timeout sessions after 30 days
 (def session-defaults
@@ -162,12 +167,30 @@
       (resp/redirect (str "/?q=user_not_found&id=" user-id)))
   (resp/redirect (str "/?q=user_not_found&id=" params))))
 
+(defn pr-bookmark-form
+  []
+  (if-let [id (session/get :user-id)]
+    (v/view-bookmark-form id)
+    (resp/redirect "/login?q=requires_auth")))
+
+(defn pr-create-bookmark
+  [params]
+  (if-let [id (session/get :user-id)]
+    (do
+      (create-bookmark! db-spec (params "title") (params "address") (params "description") id)
+      (resp/redirect "/profile/?q=bookmark_created"))
+    (resp/redirect "/login?q=requires_auth")))
+
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
   (GET "/bookmarks/user/:user" {params :params}
        (pr-bkmarks-user params my-limit 0))  
   (GET "/bookmarks/" {params :params} 
        (restricted (pr-my-bkmarks params my-limit 0)))
+  (GET "/bookmarks/new" [] 
+       (pr-bookmark-form))
+  (POST "/bookmarks/new" {params :params} 
+       (pr-create-bookmark params))
   (GET "/user/:user" {params :params}
        (pr-bkmarks-user params my-limit 0))
   (GET "/user/" [] (pr-user-bkmark-count))
