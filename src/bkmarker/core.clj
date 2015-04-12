@@ -145,6 +145,7 @@
 
 ;; (if-let [user_id (session/get :user_id)] ...
 (defn pr-my-profile
+  "Show logged in user's profile"
   []
   (if-let [user-id (session/get :user-id)]
     (if-let [user (first (find-user-by-id user-id))]
@@ -152,8 +153,19 @@
       (resp/redirect "/login?q=user_not_found"))
     (resp/redirect "/login?q=not_logged_in")))
 
+(defn pr-user-profile
+  "Show a user's profile"
+  [params]
+  (if-let [user-id (params :id)]
+    (if-let [user (first (find-user-by-id user-id))]
+      (v/view-profile user)
+      (resp/redirect (str "/?q=user_not_found&id=" user-id)))
+  (resp/redirect (str "/?q=user_not_found&id=" params))))
+
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
+  (GET "/bookmarks/user/:user" {params :params}
+       (pr-bkmarks-user params my-limit 0))  
   (GET "/bookmarks/" {params :params} 
        (restricted (pr-my-bkmarks params my-limit 0)))
   (GET "/user/:user" {params :params}
@@ -161,6 +173,7 @@
   (GET "/user/" [] (pr-user-bkmark-count))
   (GET "/tag/name/:tagname" {params :params} (pr-bkmarks-tag params my-limit 0))
   (GET "/tags/" [] (pr-tags-count))
+  (GET "/profile/:id" {params :params}  (pr-user-profile params))
   (GET "/profile/" [] (pr-my-profile))
   (GET "/search/"
        {params :params}

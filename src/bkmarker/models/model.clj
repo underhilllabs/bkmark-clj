@@ -71,7 +71,7 @@
   "Returns user details and their bookmark count"
   []
   (select users
-          (fields :username :fullname :pic_url :email)
+          (fields :id :username :fullname :pic_url :email)
           (join bookmarks (= :bookmarks.user_id :id))
           (aggregate (count :bookmarks.id) :count)
           (group :bookmarks.user_id)
@@ -93,7 +93,7 @@
           (with bookmarks)
           (with users)
           (where {:tags.name my-tag})
-          (order :updated_at :DESC)
+          ;;(order :updated_at :DESC)
           (limit lim)
           (offset off)))
 

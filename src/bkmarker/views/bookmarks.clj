@@ -1,15 +1,24 @@
 (ns bkmarker.views.bookmarks
   (:require [hiccup.core :refer :all]
             [hiccup.form :refer :all]
+            [noir.session :as session]
+            [bkmarker.db.dbconn :refer [db-spec]]
+            [yesql.core :refer [defqueries]]
             [ring.util.request :refer [path-info]]
             [bkmarker.helpers :refer [get-gravatar-pic]]
             [hiccup.page :refer :all]))
 
+;; load the yesql queries
+(defqueries "bkmarker/models/user.sql")
+
 (defn login-nav
   "Login/current session navigation widget"
   []
-  (html [:ul.nav.navbar-nav.navbar-right                                                                                                                   
-   [:li [:a {:href "/login"} "Login"]]]))
+  (html [:ul.nav.navbar-nav.navbar-right
+         [:li
+          (if-let [user-id (session/get :user-id)]
+            [:a {:href "/profile/"} "View profile"]
+            [:a {:href "/login"} "Login"])]]))
 
 (defn nav-header
   "site navigation header for the web site"
@@ -67,13 +76,14 @@
      [:a {:href (str "/user/" username)} (h username)]]])))
 
 (defn view-user-bookmark-count
+  "view users and links to profiles and bookmarks with bkmk count"
   [user-count]
-  (let [{:keys [username count pic_url fullname email]} user-count]
+  (let [{:keys [id username count pic_url fullname email]} user-count]
     (html [:div {:class "user-div"}
            [:span {:class "profile-avatar"} 
             [:img {:src (get-gravatar-pic email)}]]
            [:span {:class "profile-username"} 
-            [:a {:href (str "/user/" username) } username]]
+            [:a {:href (str "/profile/" id) } username]]
            [:span {:class "profile-fullname"} 
             (str " " fullname " ")
             [:a {:href (str "/user/" username) } (str "View Bookmarks (" count ")")]]])))
@@ -122,14 +132,41 @@
               :name "password"}]]
     [:div.actions (submit-button "Login")])))
 
+(defn view-user-popular-tags
+  [user-id]
+  (let [tags (find-user-tags-count db-spec user-id 0 10)]
+    [:div
+     [:ul.tags
+      (for [tag tags]
+        [:li.popular_tags
+         (str (get tag :name) " (" (get tag :count) ")" )])]]))
+
+(defn view-user-recent-bookmarks
+  [user-id]
+  (let [bookmarks (find-bookmarks-user db-spec user-id 0 10)]
+    [:div.rec-bkmks
+     [:ul.bookmarks
+      (for [bookmark bookmarks]
+        [:li.recent-bookmark
+         [:a {:href (get bookmark :url) } (get bookmark :title)]])]]))
+
 (defn view-profile
   [user]
   (main-layout
-   "User Profile"
-   [:h2 (str "Welcome " (user :fullname "Unnamed friend"))]
+   (str "Profile of " (user :username))
    [:div.profile
-    [:span "Email:"]
-    [:span (user :email)]]))
+    [:img {:src (get-gravatar-pic (user :email))}]
+    [:span "Name:"]
+    [:span (user :fullname)]
+    [:hr]
+    [:div.recent
+     [:h3 "Recent Bookmarks"]
+     (view-user-recent-bookmarks (user :id))]
+    [:hr]
+    [:div.pop-tags
+     [:h3 "Popular Tags"]
+     (view-user-popular-tags (user :id))]
+    [:hr]]))
 
 (defn view-register-page
   []
