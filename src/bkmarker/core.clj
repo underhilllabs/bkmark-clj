@@ -16,6 +16,7 @@
             [noir.cookies :as cookies]
             [hiccup.core :as hiccup]
             [hiccup.page :as h]
+            [hiccup.element :refer [javascript-tag]]
             [clojure.java.jdbc :as j]
             [clojure.string :as s]
             [org.httpkit.server :refer [run-server]])
@@ -46,7 +47,7 @@
 (defn pr-bkmarks-user
   "Print all the users bookmarks!"
   [params lim off]
-  (let [my-user (get params :user)
+  (let [my-user (get params :username)
         page (get params "page" "1")
         page-num (Integer/parseInt page)
         offset (* (dec page-num) lim)]
@@ -173,20 +174,32 @@
     (v/view-bookmark-form id)
     (resp/redirect "/login?q=requires_auth")))
 
+(defn pr-bookmarklet-form
+  [params]
+  (if-let [id (session/get :user-id)]
+    (v/view-bookmarklet-form id params)
+    (resp/redirect "/login?q=requires_auth")))
+
+
 (defn pr-create-bookmark
   [params]
   (if-let [id (session/get :user-id)]
     (do
       (create-bookmark! db-spec (params "title") (params "address") (params "description") id)
-      (resp/redirect "/profile/?q=bookmark_created"))
+      (if (params "bookmarklet") 
+        (hiccup/html 
+         (javascript-tag "window.close();"))
+        (resp/redirect "/profile/?q=bookmark_created")))
     (resp/redirect "/login?q=requires_auth")))
 
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
-  (GET "/bookmarks/user/:user" {params :params}
+  (GET "/bookmarks/user/:username" {params :params}
        (pr-bkmarks-user params my-limit 0))  
   (GET "/bookmarks/" {params :params} 
        (restricted (pr-my-bkmarks params my-limit 0)))
+  (GET "/bookmarklet" {params :params} 
+       (pr-bookmarklet-form params))
   (GET "/bookmarks/new" [] 
        (pr-bookmark-form))
   (POST "/bookmarks/new" {params :params} 
@@ -208,8 +221,7 @@
   (POST "/register" {params :params}
         (register-user params))
   (POST "/login" {params :params}
-        (auth-user params))
-        
+        (auth-user params))        
   (resources "/")
   (not-found "Page not found."))
 

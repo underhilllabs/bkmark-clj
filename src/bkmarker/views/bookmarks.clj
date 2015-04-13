@@ -239,3 +239,35 @@
               :class "input-checkbox" 
               :name "archive_url"}]]
     [:div.actions (submit-button "Create Bookmark")])))
+
+(defn view-bookmarklet-form
+  [user-id params]
+  (main-layout 
+   "Add Bookmark"
+   (form-to 
+    [:post "/bookmarks/new"]
+    [:input {:type "hidden" :value user-id :name "user_id"}] 
+    [:input {:type "hidden" :value "true" :name "bookmarklet"}] 
+    [:div.field 
+     [:label {:for "address"} "Address"]
+      [:input {:class "input-text span2" :name "address" :value (params "address")}]]
+    [:div.field 
+     [:label {:for "title"} "Title"]
+      [:input {:class "input-text span2" :name "title" :value (params "title")}]]
+    [:div.field 
+     [:label {:for "description"} "Description"]
+      [:input {:class "input-text span2" :name "description" :value (params "description")}]]
+    [:div.field 
+     [:label {:for "tags"} "Tags"]
+      [:input {:class "input-text span2" :name "tags"}]]
+    [:div.field 
+     [:label {:for "private"} "Private"]
+     [:input {:type "checkbox" 
+              :class "input-checkbox" 
+              :name "private"}]]
+    [:div.field 
+     [:label {:for "archive-url"} "archive url?"]
+     [:input {:type "checkbox" 
+              :class "input-checkbox" 
+              :name "archive_url"}]]
+    [:div.actions (submit-button "Create Bookmark")])))
