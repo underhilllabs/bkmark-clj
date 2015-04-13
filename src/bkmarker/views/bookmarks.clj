@@ -16,14 +16,14 @@
   []
   (html [:ul.nav.navbar-nav.navbar-right
          [:li
-          (if-let [user-id (session/get :user-id)]
-            [:a {:href "/profile/"} "View profile"]
+          (if-let [username (session/get :user-name)]
+            [:a {:href "/profile/"} (str "Logged in as: " username)]
             [:a {:href "/login"} "Login"])]]))
 
 (defn nav-links-auth
-  [user-id]
+  [user-name]
   (html
-   [:li [:a {:href (str "/bookmarks/user/" user-id)} "My Bookmarks"]]
+   [:li [:a {:href (str "/bookmarks/user/" user-name)} "My Bookmarks"]]
    [:li [:a {:href "/bookmarks/new"} "Add Bookmark"]]))
 
 (defn nav-header
@@ -35,8 +35,8 @@
      [:a {:class "brand" :href "/"} "Bkmarker"]
      [:div {:class "nav-collapse"}
       [:ul {:class "nav"}
-       (when-let [user-id (session/get :user-id)]
-         (nav-links-auth user-id))
+       (when-let [user-name (session/get :user-name)]
+         (nav-links-auth user-name))
        [:li [:a {:href "/user/"} "Users"]]
        [:li [:a {:href "/tags/"} "Tags"]]]
       [:div 

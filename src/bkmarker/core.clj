@@ -13,7 +13,6 @@
             [noir.util.middleware :refer [app-handler]]
             [noir.util.crypt :as crypt]
             [noir.session :as session]
-            [noir.cookies :as cookies]
             [hiccup.core :as hiccup]
             [hiccup.page :as h]
             [hiccup.element :refer [javascript-tag]]
@@ -51,7 +50,6 @@
         page (get params "page" "1")
         page-num (Integer/parseInt page)
         offset (* (dec page-num) lim)]
-    ;;(str "user -> " my-user " page: " page " uri: " uri " params: " params ))) 
     (v/main-layout 
      (str (s/capitalize my-user) 
           "'s Bookmarks")
@@ -131,9 +129,8 @@
   (if-let [user (first (find-user-email (get params "username")))]
     (if (crypt/compare (get params "password") (get user :password_digest))
       (do
-        ;;(cookies/put! :user-id (get user :uid))
         (session/put! :user-id (get user :id))
-        ;;(str "You're authorized: " (get params "username") " with id: " (get user :id) " and email: " (get user :email) " fullname: " (get user :fullname)))
+        (session/put! :user-name (get user :username))
         (resp/redirect "/profile/"))
       (resp/redirect "/login?q=incorrect_login"))
     (resp/redirect "/login?q=incorrect_email")))
@@ -147,6 +144,7 @@
         user-id (create-user username email password-digest)]
     (do
       (session/put! :user-id user-id)
+      (session/put! :username username)
       (resp/redirect "/profile"))))
 
 ;; (if-let [user_id (session/get :user_id)] ...
@@ -180,12 +178,14 @@
     (v/view-bookmarklet-form id params)
     (resp/redirect "/login?q=requires_auth")))
 
-
 (defn pr-create-bookmark
   [params]
   (if-let [id (session/get :user-id)]
     (do
-      (create-bookmark! db-spec (params "title") (params "address") (params "description") id)
+      (let [bk-id (create-bookmark<! db-spec (params "title") (params "address") (params "description") id)]
+        (when-let [tags (params "tags")]
+          (for [tag (clojure.string/split tags #",\s+")]
+            (create-tag! db-spec tag bk-id id))))
       (if (params "bookmarklet") 
         (hiccup/html 
          (javascript-tag "window.close();"))

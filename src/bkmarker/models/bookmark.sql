@@ -1,4 +1,4 @@
--- name: create-bookmark!
+-- name: create-bookmark<!
 insert into bookmarks
 (title, url, `desc`, user_id, created_at, updated_at)
 values
