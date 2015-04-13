@@ -179,18 +179,17 @@
     (resp/redirect "/login?q=requires_auth")))
 
 (defn pr-create-bookmark
-  [params]
+  [{:strs [title address description tags :as params]}]
   (if-let [id (session/get :user-id)]
     (do
-      (let [bk-id (create-bookmark<! db-spec (params "title") (params "address") (params "description") id)]
-        (when-let [tags (params "tags")]
-          (for [tag (clojure.string/split tags #",\s+")]
-            (create-tag! db-spec tag bk-id id))))
+      (let [bk-id (create-bookmark<! db-spec title address description id)]
+        (doseq [tag-name (clojure.string/split tags #",\s+")]
+          (create-tag! db-spec tag-name (bk-id :generated_key) id)))
       (if (params "bookmarklet") 
         (hiccup/html 
          (javascript-tag "window.close();"))
-        (resp/redirect "/profile/?q=bookmark_created")))
-    (resp/redirect "/login?q=requires_auth")))
+        (resp/redirect "/profile/?q=bookmark_created"))))
+    (resp/redirect "/login?q=requires_auth"))
 
 (defroutes bkmark-routes 
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
