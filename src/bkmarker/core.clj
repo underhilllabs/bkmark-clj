@@ -6,23 +6,22 @@
             [compojure.route :refer :all]
             [bkmarker.models.model :refer :all]
             [bkmarker.views.bookmarks :as v]
-            [bkmarker.db.dbconn :refer [db-spec]]
-            [yesql.core :refer [defqueries]]
+            ;;[bkmarker.db.dbconn :refer [db-spec]]
+            ;;[yesql.core :refer [defqueries]]
             [korma.core :refer :all]
-            [noir.util.route :refer [restricted]]
-            [noir.util.middleware :refer [app-handler]]
+            ;;[noir.util.route :refer [restricted]]
+            ;;[noir.util.middleware :refer [app-handler]]
             [noir.util.crypt :as crypt]
             [noir.session :as session]
             [hiccup.core :as hiccup]
             [hiccup.page :as h]
             [hiccup.element :refer [javascript-tag]]
-            [clojure.java.jdbc :as j]
             [clojure.string :as s]
             [org.httpkit.server :refer [run-server]])
   (:gen-class :main true))
 
 ;; load the yesql queries
-(defqueries "bkmarker/models/bookmark.sql")
+;;(defqueries "bkmarker/models/bookmark.sql")
 
 ;; timeout sessions after 30 days
 (def session-defaults
@@ -141,7 +140,7 @@
         password (get params "userpass")
         email (get params "email")
         password-digest (crypt/encrypt password)
-        user-id (create-user<! username email password-digest)]
+        user-id (create-user username email password-digest)]
     (do
       (session/put! :user-id (user-id :generated_key))
       (session/put! :username username)
@@ -182,9 +181,9 @@
   [{:strs [title address description tags bookmarklet]}]
   (if-let [id (session/get :user-id)]
     (do
-      (let [bk-id (create-bookmark<! db-spec title address description id)]
+      (let [bk-id (create-bookmark title address description id)]
         (doseq [tag-name (s/split (s/trim tags) #",\s+")]
-          (create-tag! db-spec tag-name (bk-id :generated_key) id)))
+          (create-tag tag-name (bk-id :generated_key) id)))
       (if-not (s/blank? bookmarklet)
         (hiccup/html
          (javascript-tag "window.close();"))
@@ -195,8 +194,8 @@
   (GET "/" {params :params} (pr-bkmarks params my-limit 0))
   (GET "/bookmarks/user/:username" {params :params}
        (pr-bkmarks-user params my-limit 0))  
-  (GET "/bookmarks/" {params :params} 
-       (restricted (pr-my-bkmarks params my-limit 0)))
+  ;;(GET "/bookmarks/" {params :params} 
+  ;;     (restricted (pr-my-bkmarks params my-limit 0)))
   (GET "/bookmarklet" {params :params} 
        (pr-bookmarklet-form params))
   (GET "/bookmarks/new" [] 

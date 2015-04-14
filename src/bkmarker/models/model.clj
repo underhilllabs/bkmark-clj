@@ -44,8 +44,21 @@
   [username email pass_digest]
   (let [user-return 
         (insert users
-                (values [{:username username :email email :password_digest pass_digest}]))]
+                (values [{:username username :email email :password_digest pass_digest :created_at "now()" :updated_at "now()" }]))]
     (user-return :generated_key)))
+
+(defn create-tag
+  [name bookmark-id user-id]
+  (insert tags
+          (values [{:name name :bookmark_id bookmark-id :user_id user-id :created_at "now()" :updated_at "now()" }])))
+
+(defn create-bookmark
+  [title address description user-id]
+  (let [book-return 
+        (insert bookmarks
+                (values [{:user_id user-id :title title :desc description :url address :created_at "now()" :updated_at "now()" }]))]
+    (book-return :generated_key)))
+
 
 (defn bkmarks-query
   [lim off]
