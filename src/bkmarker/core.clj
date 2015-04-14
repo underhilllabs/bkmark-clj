@@ -141,9 +141,9 @@
         password (get params "userpass")
         email (get params "email")
         password-digest (crypt/encrypt password)
-        user-id (create-user username email password-digest)]
+        user-id (create-user<! username email password-digest)]
     (do
-      (session/put! :user-id user-id)
+      (session/put! :user-id (user-id :generated_key))
       (session/put! :username username)
       (resp/redirect "/profile"))))
 

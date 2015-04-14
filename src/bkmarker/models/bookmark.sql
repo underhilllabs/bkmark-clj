@@ -12,3 +12,7 @@ values
 
 
 
+-- name: create-user<!                                                                                                                                        insert into users
+(username, email, password_digest)
+values
+(:username, :email, :pass_digest)
