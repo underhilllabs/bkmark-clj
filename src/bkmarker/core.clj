@@ -142,7 +142,7 @@
         password-digest (crypt/encrypt password)
         user-id (create-user username email password-digest)]
     (do
-      (session/put! :user-id (user-id :generated_key))
+      (session/put! :user-id user-id)
       (session/put! :username username)
       (resp/redirect "/profile"))))
 
@@ -183,7 +183,7 @@
     (do
       (let [bk-id (create-bookmark title address description id)]
         (doseq [tag-name (s/split (s/trim tags) #",\s+")]
-          (create-tag tag-name (bk-id :generated_key) id)))
+          (create-tag tag-name bk-id id)))
       (if-not (s/blank? bookmarklet)
         (hiccup/html
          (javascript-tag "window.close();"))
