@@ -1,7 +1,9 @@
 (ns bkmarker.models.model
   (:require [bkmarker.db.dbconn :refer :all]
+            [black.water.korma :refer [decorate-korma!]]
             [korma.core :refer :all]))
 
+(decorate-korma!)
 (declare users bookmarks tags)
 
 (defentity users

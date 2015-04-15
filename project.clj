@@ -8,6 +8,7 @@
                  [lib-noir "0.9.9" :exclusions [clout commons-codec joda-time]]
                  [mysql/mysql-connector-java "5.1.35"]
                  [korma "0.4.0"]
+                 [blackwater "0.0.9"]
                  [enlive "1.1.5"]
                  [yesql "0.4.0"]
                  [compojure "1.3.3"]
