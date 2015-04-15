@@ -11,17 +11,19 @@ A Social Bookmarking site written in Clojure.
 3. Migrate database with: `lein ragtime migrate`
 4. start the server `lein run`
 
-### Deploy
+## Deploy
 
 #### Create an uberjar for deployment
 
 ```
 lein uberjar
 ```
-this will create target/table-flip-0.1.0-SNAPSHOT.jar which can be run with:
+this will create target/bkmarker-0.1.0-SNAPSHOT.jar.
+
+This jar file can be run with:
 
 ```
-java -jar target/table-flip-0.1.0-SNAPSHOT.jar 
+java -jar target/bkmarker-0.1.0-SNAPSHOT.jar 
 ```
 
 ## License
