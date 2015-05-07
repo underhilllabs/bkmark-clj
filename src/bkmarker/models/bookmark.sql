@@ -10,9 +10,8 @@ insert into tags
 values
 (:name, :bookmark_id, :user_id)
 
-
-
--- name: create-user<!                                                                                                                                        insert into users
+-- name: create-user<!
+insert into users
 (username, email, password_digest)
 values
 (:username, :email, :pass_digest)
