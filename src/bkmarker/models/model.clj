@@ -1,7 +1,10 @@
 (ns bkmarker.models.model
   (:require [bkmarker.db.dbconn :refer :all]
+            [black.water.korma :refer [decorate-korma!]]
             [korma.core :refer :all]))
 
+;; DEBUG!! SQL logging here!
+(decorate-korma!)
 (declare users bookmarks tags)
 
 (defentity users
@@ -15,7 +18,6 @@
 (defentity tags
   (belongs-to users {:fk :user_id})
   (belongs-to bookmarks {:fk :bookmark_id}))
-  
 
 (defn pr-user-bkmarks
   "Select the users and their bookmark count"
@@ -44,8 +46,40 @@
   [username email pass_digest]
   (let [user-return 
         (insert users
-                (values [{:username username :email email :password_digest pass_digest}]))]
+                (values [{:username username 
+                          :email email 
+                          :password_digest pass_digest 
+                          :created_at (sqlfn now) :updated_at (sqlfn now) }]))]
     (user-return :generated_key)))
+
+(defn create-tag
+  [name bookmark-id user-id]
+  (insert tags
+          (values [{:name name :bookmark_id bookmark-id :user_id user-id :created_at (sqlfn now) }])))
+
+(defn update-bookmark
+  [title address description user-id]
+  (let [book-return
+        (update bookmarks
+           (set-fields {:title title 
+                        :url address 
+                        :desc description
+                        :updated_at (sqlfn now)})
+           (where {:user-id user-id :address address})
+           (limit 1))]
+    (book-return :generated-key)))
+
+(defn create-bookmark
+  [title address description user-id]
+  (let [book-return 
+        (insert bookmarks
+          (values [{:user_id user-id 
+                    :title title 
+                    :desc description 
+                    :url address 
+                    :created_at (sqlfn now) :updated_at (sqlfn now) }]))]
+    (book-return :generated_key)))
+
 
 (defn bkmarks-query
   [lim off]
