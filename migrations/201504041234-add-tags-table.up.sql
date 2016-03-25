@@ -3,6 +3,5 @@ CREATE TABLE tags (
        name VARCHAR(255),
        user_id INTEGER,
        bookmark_id INTEGER,
-       created_at DATETIME,
-       updated_at DATETIME
+       created_at DATETIME
 );

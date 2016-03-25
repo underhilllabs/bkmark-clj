@@ -5,7 +5,6 @@ CREATE TABLE users (
        fullname VARCHAR(255),
        website VARCHAR(255),
        created_at DATETIME,
-       updated_at DATETIME,
        pic_url VARCHAR(255),
        password_digest VARCHAR(255)
 );
